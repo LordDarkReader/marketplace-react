@@ -4,8 +4,9 @@ import {ReactComponent as ArrowRightIcon} from '../assets/svg/keyboardArrowRight
 import visibilityIcon from '../assets/svg/visibilityIcon.svg';
 import {getAuth, createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
 import {db} from '../firebase.config';
-import { setDoc , doc, serverTimestamp} from 'firebase/firestore';
+import {setDoc, doc, serverTimestamp} from 'firebase/firestore';
 import {toast} from 'react-toastify';
+import OAuth from '../components/OAuth';
 
 function SignUp() {
     const [showPassword, setShowPassword] = useState(false);
@@ -22,33 +23,33 @@ function SignUp() {
         setFormDate((prevState) => ({
             ...prevState,
             [e.target.id]: e.target.value
-        }) )
+        }))
     };
 
     const onSubmit = async (e) => {
-      e.preventDefault();
+        e.preventDefault();
 
-      try {
-          const auth = getAuth();
+        try {
+            const auth = getAuth();
 
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-          const user = userCredential.user;
-          updateProfile(auth.currentUser, {
-              displayName: name
-          });
+            const user = userCredential.user;
+            updateProfile(auth.currentUser, {
+                displayName: name
+            });
 
-          const formDataCopy = {...formDate};
-          delete formDataCopy.password;
-          formDataCopy.timestamp = serverTimestamp();
+            const formDataCopy = {...formDate};
+            delete formDataCopy.password;
+            formDataCopy.timestamp = serverTimestamp();
 
-          await setDoc(doc(db, 'users', user.uid), formDataCopy);
+            await setDoc(doc(db, 'users', user.uid), formDataCopy);
 
-          navigate('/');
+            navigate('/');
 
-      } catch (error) {
-          toast.error('Something went wrong with registration');
-      }
+        } catch (error) {
+            toast.error('Something went wrong with registration');
+        }
 
     };
 
@@ -87,7 +88,7 @@ function SignUp() {
                             <img src={visibilityIcon}
                                  alt='show password'
                                  className='showPassword'
-                                 onClick={() => setShowPassword( (prevState) => !prevState)}
+                                 onClick={() => setShowPassword((prevState) => !prevState)}
                             />
                         </div>
 
@@ -103,7 +104,7 @@ function SignUp() {
                             </button>
                         </div>
                     </form>
-                    {/*Google OAuth*/}
+                    <OAuth/>
 
                     <Link to='/sign-in' className='registerLink'>
                         Sign In Instead
