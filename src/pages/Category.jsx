@@ -50,8 +50,8 @@ function Category() {
                 (<>
                     <main>
                         <div className='categoryListing'>
-                            {listings.map((listings) => (
-                                <ListingsItem listing={listings.data} id={listings.id} key={listings.id}/>
+                            {listings.map((listing) => (
+                                <ListingsItem listing={listing.data} id={listing.id} key={listing.id}/>
                             ))}
                         </div>
                     </main>
