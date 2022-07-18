@@ -9,6 +9,7 @@ import ListingsItem from '../components/ListingsItem';
 function Category() {
     const [listings, setListings] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [lastFetchedListings, setLastFetchedListings] = useState(null);
 
     const params = useParams();
 
@@ -17,9 +18,12 @@ function Category() {
           try {
               const listingsRef = collection(db, 'listings');
 
-              const q = query(listingsRef, where('type', '==', params.categoryName), orderBy('timestamp', 'desc'), limit(10));
+              const q = query(listingsRef, where('type', '==', params.categoryName), orderBy('timestamp', 'desc'), limit(2));
 
               const querySnap = await getDocs(q);
+
+              const lastVisible = querySnap.docs[querySnap.docs.length - 1];
+              setLastFetchedListings(lastVisible);  
 
               let listings = [];
               querySnap.forEach((doc) => {
@@ -39,6 +43,34 @@ function Category() {
         fetchListings();
     }, [params.categoryName]);
 
+    // Pagination /Load more
+    const onFetchMoreListings = async () => {
+        try {
+            const listingsRef = collection(db, 'listings');
+
+            const q = query(listingsRef, where('type', '==', params.categoryName), orderBy('timestamp', 'desc'),startAfter(lastFetchedListings) ,limit(2));
+
+            const querySnap = await getDocs(q);
+
+            const lastVisible = querySnap.docs[querySnap.docs.length - 1];
+            setLastFetchedListings(lastVisible);  
+
+            let listings = [];
+            querySnap.forEach((doc) => {
+                return listings.push({
+                    id: doc.id,
+                    data: doc.data()
+                });
+            });
+
+            setListings((prevState) => [...prevState, ...listings]);
+            setLoading(false);
+        } catch (error) {
+          toast.error('Could not fetch listings' )
+        }
+      };
+
+
     return (
         <div className='category'>
             <header>
@@ -55,6 +87,13 @@ function Category() {
                             ))}
                         </div>
                     </main>
+
+                    <br />
+                    <br />
+                    {lastFetchedListings && (
+                        <p className='loadMore' onClick={onFetchMoreListings}>Load More</p>
+                    )}                
+                                
                 </>)
                 : (<p>No listings for {params.categoryName}</p>)}
 

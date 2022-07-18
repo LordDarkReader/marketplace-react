@@ -1,13 +1,14 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {ReactComponent as DeleteIcon} from '../assets/svg/deleteIcon.svg';
+import {ReactComponent as EditIcon} from '../assets/svg/editIcon.svg';
 import bedIcon from '../assets/svg/bedIcon.svg';
 import bathtubIcon from '../assets/svg/bathtubIcon.svg';
 
-function ListingsItem( {listing, id} ) {
-    const onDelete = () =>{
+function ListingsItem( {listing, id, onEdit, onDelete} ) {
+    // const onDelete = () => {
 
-    };
+    // };
 
     return (
         <li className='categoryListing'>
@@ -33,6 +34,8 @@ function ListingsItem( {listing, id} ) {
             {onDelete && (
                 <DeleteIcon className='removeIcon' fill='rgb(231, 76, 60)' onClick={() => onDelete(listing.id, listing.name)}/>
             )}
+
+            {onEdit && <EditIcon className='editIcon' onClick={() => onEdit(id)}/>}
         </li>
     )
 }
